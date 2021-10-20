@@ -22,7 +22,7 @@ class _WeatherDetailsState extends State<WeatherDetails> {
       appBar: (AppBar(
         centerTitle: true,
         title: Text(
-          'Weather Screen',
+          'Weather App',
         ),
         backgroundColor: Color(0xFF151026),
       )),
