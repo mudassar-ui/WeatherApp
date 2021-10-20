@@ -51,194 +51,67 @@ class _WeatherDetailsState extends State<WeatherDetails> {
             SizedBox(
               height: 20,
             ),
-            if (data.isNotEmpty)
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'City:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      data['name'],
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+            if (data.isNotEmpty) getWidget('City', data['name']),
             SizedBox(
               height: 20,
             ),
-            //description
-
             if (data.isNotEmpty)
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Description:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      data['weather'][0]['description'],
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+              getWidget('Description', data['weather'][0]['description']),
             SizedBox(
               height: 20,
             ),
-
-            //Temprature
-
             if (data.isNotEmpty)
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Temprature:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      data['main']['temp'].toString(),
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+              getWidget('Temprature', data['main']['temp'].toString()),
             SizedBox(
               height: 20,
             ),
-            //Perceived
-
             if (data.isNotEmpty)
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Perceived:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      data['coord']['lon'].toStringAsFixed(2),
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+              getWidget('Perceived', data['coord']['lon'].toStringAsFixed(2)),
             SizedBox(
               height: 20,
             ),
-            //Pressure
             if (data.isNotEmpty)
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Pressure:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      data['main']['pressure'].toString(),
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+              getWidget('Pressure', data['main']['pressure'].toString()),
             SizedBox(
               height: 20,
             ),
-            //Humidity
             if (data.isNotEmpty)
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Humidity:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      data['main']['humidity'].toString(),
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
+              getWidget('Humidity', data['main']['humidity'].toString()),
           ],
         ),
       ),
     );
   }
 
-  Future getWeatherDetails(String city) async {
-    //print(city);
+  Widget getWidget(String title, String data) {
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              title,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            data,
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+        ),
+      ],
+    );
+  }
 
+  Future getWeatherDetails(String city) async {
     var url = Uri.parse(
         "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=9008f007aec2e5db70ff7893b5f62042");
     final response = await http.get(url);
     data = jsonDecode(response.body);
-    print(data);
-    print(data['name']);
-    print(data['weather'][0]['description']);
-    print(data['main']['temp'].toDouble());
-    print(data['coord']['lon'].toDouble());
-    print(data['main']['pressure'].toDouble());
-    print(data['main']['humidity'].toDouble());
+
     setState(() {});
   }
 }
