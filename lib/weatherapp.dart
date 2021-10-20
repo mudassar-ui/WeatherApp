@@ -10,7 +10,10 @@ class WeatherDetails extends StatefulWidget {
 
 class _WeatherDetailsState extends State<WeatherDetails> {
   TextEditingController cityInput = TextEditingController();
-  Map data = {};
+  Map weatherData = {};
+  final _form = GlobalKey<FormState>();
+  final validCharacters = RegExp(r'^[0-9_\=@,\;*]+$');
+  final specialChar = RegExp(r'^[_\-=@,\.;+*]+$');
 
   @override
   Widget build(BuildContext context) {
@@ -33,57 +36,84 @@ class _WeatherDetailsState extends State<WeatherDetails> {
         ),
         child: Column(
           children: [
+            // Search field
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                style: TextStyle(fontWeight: FontWeight.bold),
-                controller: cityInput,
-                decoration: InputDecoration(
-                  labelText: 'City',
-                  suffixIcon: InkWell(
-                      onTap: () {
-                        getWeatherDetails(cityInput.text);
-                      },
-                      child: Icon(Icons.search)),
+              child: Form(
+                key: _form,
+                child: TextFormField(
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  controller: cityInput,
+                  validator: (cityInput) {
+                    if (cityInput!.isEmpty) {
+                      return 'Please provide city name.';
+                    }
+                    if (cityInput.contains(validCharacters)) {
+                      return 'dont enter numbers .';
+                    }
+                    if (cityInput.contains(specialChar)) {
+                      return 'dont enter special characters .';
+                    }
+
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Enter City name',
+                    suffixIcon: InkWell(
+                        onTap: () {
+                          final isValid = _form.currentState!.validate();
+
+                          if (!isValid) {
+                            return;
+                          }
+                          getWeatherDetails(cityInput.text);
+                        },
+                        child: Icon(Icons.search)),
+                  ),
                 ),
               ),
             ),
             SizedBox(
               height: 20,
             ),
-            if (data.isNotEmpty) getWidget('City', data['name']),
+
+            //Weather Details
+
+            if (weatherData.isNotEmpty) getWidget('City', weatherData['name']),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            if (data.isNotEmpty)
-              getWidget('Description', data['weather'][0]['description']),
+            if (weatherData.isNotEmpty)
+              getWidget(
+                  'Description', weatherData['weather'][0]['description']),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            if (data.isNotEmpty)
-              getWidget('Temprature', data['main']['temp'].toString()),
+            if (weatherData.isNotEmpty)
+              getWidget('Temprature', weatherData['main']['temp'].toString()),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            if (data.isNotEmpty)
-              getWidget('Perceived', data['coord']['lon'].toStringAsFixed(2)),
+            if (weatherData.isNotEmpty)
+              getWidget(
+                  'Perceived', weatherData['coord']['lon'].toStringAsFixed(2)),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            if (data.isNotEmpty)
-              getWidget('Pressure', data['main']['pressure'].toString()),
+            if (weatherData.isNotEmpty)
+              getWidget('Pressure', weatherData['main']['pressure'].toString()),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            if (data.isNotEmpty)
-              getWidget('Humidity', data['main']['humidity'].toString()),
+            if (weatherData.isNotEmpty)
+              getWidget('Humidity', weatherData['main']['humidity'].toString()),
           ],
         ),
       ),
     );
   }
 
-  Widget getWidget(String title, String data) {
+  Widget getWidget(String title, String weatherData) {
     return Row(
       children: [
         Expanded(
@@ -91,15 +121,20 @@ class _WeatherDetailsState extends State<WeatherDetails> {
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
               title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800]),
             ),
           ),
         ),
         Expanded(
           child: Text(
-            data,
+            weatherData,
             style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[800]),
           ),
         ),
       ],
@@ -107,10 +142,12 @@ class _WeatherDetailsState extends State<WeatherDetails> {
   }
 
   Future getWeatherDetails(String city) async {
-    var url = Uri.parse(
-        "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=9008f007aec2e5db70ff7893b5f62042");
+    var url;
+    if (city.isNotEmpty)
+      url = Uri.parse(
+          "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=9008f007aec2e5db70ff7893b5f62042");
     final response = await http.get(url);
-    data = jsonDecode(response.body);
+    weatherData = jsonDecode(response.body);
 
     setState(() {});
   }
